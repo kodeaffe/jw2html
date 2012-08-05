@@ -24,13 +24,14 @@ $ pip install BeautifulSoup
 Usage
 =====
 
-Edit settings.py to for your login / password (or leave it empty, most
-articles are available freely anyway)
+Edit settings.py to match your login / password
+(or leave it empty, most articles are available freely anyway)
 
 Import the class wherever you want or run it like this:
 
 $ python jw2html/__init__.py
 
 
-It will create a cache dir of downloaded stories, a cover image and an HTML
-file to feed to your favourite epub converter.
+It will create a cache dir of downloaded stories as sepcified in settings.py
+and create a cover image and an HTML file to feed to your favourite epub
+converter in your current directory.
