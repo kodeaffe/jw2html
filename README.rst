@@ -24,8 +24,8 @@ $ pip install BeautifulSoup
 Usage
 =====
 
-Edit settings.py to match your login / password
-(or leave it empty, most articles are available freely anyway)
+Copy settings.py.example to settings.py and edit it to match your login /
+password (or leave it empty, most articles are available freely anyway).
 
 Import the class wherever you want or run it like this:
 
