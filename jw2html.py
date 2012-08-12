@@ -6,7 +6,8 @@ Download the current issue and prepare for conversion to epub.
 
 """
 __docformat__ = "epytext en"
-import sys, os, getopt, urllib, urllib2, re, json, time, logging
+import sys, os, getopt, urllib, urllib2, re, json, time, logging, shutil
+import random, string
 from BeautifulSoup import BeautifulSoup
 
 logging.basicConfig(level=logging.INFO)
@@ -16,14 +17,19 @@ LOGGER = logging.getLogger(__name__)
 
 class JW2HTML (object):
 	"""Download an issue of Jungle World + prepare for conversion to epub."""
-	def __init__ (self, user, password, server, cachedir):
+	def __init__ (self, user, password, server, cache_dir):
 		self.user = user
 		self.password = password
 		self.url_server = server
 
-		self.cachedir = cachedir
-		if not os.path.exists(self.cachedir):
-			os.mkdir(self.cachedir)
+		self.cache_dir = cache_dir
+		if not os.path.exists(self.cache_dir):
+			os.mkdir(self.cache_dir)
+
+		self.title = 'Unknown issue of Jungle World'
+		self.uri_cover = ''
+		self.issue_no = ''.join(random.sample(string.letters + string.digits, 8))
+		self.issue_dir = os.path.join(self.cache_dir, self.issue_no)
 
 		passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
 		passman.add_password(None, self.url_server, self.user, self.password)
@@ -45,10 +51,10 @@ class JW2HTML (object):
 		@rtype: str
 		"""
 		if is_index:
-			filename = os.path.join(self.cachedir, 'index.html')
+			filename = os.path.join(self.cache_dir, 'index.html')
 		else:
 			basename = os.path.basename(uri)
-			filename = os.path.join(self.cachedir, basename)
+			filename = os.path.join(self.issue_dir, basename)
 
 		# always fetch index from url
 		if not is_index and os.path.exists(filename):
@@ -57,7 +63,8 @@ class JW2HTML (object):
 				html = f.read()
 		else:
 			url = self.url_server + uri
-			LOGGER.info('Retrieving from url %s...' % url)
+			LOGGER.info('Retrieving from url %s to file %s...' % (
+				url, filename))
 			html = urllib2.urlopen(url).read()
 			with open(filename, 'w') as f:
 				f.write(html)
@@ -65,40 +72,37 @@ class JW2HTML (object):
 		return html
 
 
-	def get_meta (self, soup):
-		"""Get meta data out of given soup.
+	def parse_index (self):
+		"""Parse index file.
 
-		@param soup: soup which contains the meta data
-		@type soup: BeautifulSoup
-		@return: meta data
-		@rtype: { 'title': str, 'issue_no': str, 'uri_cover': str }
-		"""
-		div = soup.find('div', attrs={'class':'cover_thumb'})
-		title = div.find('p').text
+		Populates member variables issue_no, title, and uri_cover.
+		Copies index file to issue dir.
+		Return index soup.
 
-		# title == u'Jungle World Nr. 31/12,2. August 2012'
-		issue_no = title.split('.')[1:2][0].split(',')[0].strip()
-
-		uri_cover = dict(div.find('img').attrs)['src'].replace('thumb_', '')
-
-		LOGGER.info('META info: title %s, issue_no %s, uri_cover %s' % (
-			title, issue_no, uri_cover))
-		return {
-			'title': title,
-			'issue_no': issue_no,
-			'uri_cover': uri_cover
-		}
-
-
-	def get_indexsoup (self):
-		"""Get soup of index page.
-
-		@return: soup of index page
+		@return: soup of the index file
 		@rtype: BeautifulSoup
 		"""
 		index = self._fetch_html('/inhalt/', True)
-		return BeautifulSoup(index,
+		soup = BeautifulSoup(index,
 			convertEntities=BeautifulSoup.HTML_ENTITIES)
+
+		div = soup.find('div', attrs={'class':'cover_thumb'})
+		self.title = div.find('p').text
+
+		# e.g. title == u'Jungle World Nr. 31/12,2. August 2012'
+		issue = self.title.split('.')[1:2][0].split(',')[0].strip().split('/')
+		self.issue_no = issue[1] + '.' + issue[0]
+		self.issue_dir = os.path.join(self.cache_dir, self.issue_no)
+		if not os.path.exists(self.issue_dir):
+			os.makedirs(self.issue_dir)
+		shutil.move(os.path.join(self.cache_dir, 'index.html'),
+			os.path.join(self.issue_dir, 'index.html'))
+
+		self.uri_cover = dict(div.find('img').attrs)['src'].replace('thumb_', '')
+
+		LOGGER.info('META info: title %s, issue_no %s uri_cover %s' % (
+			self.title, self.issue_no, self.uri_cover))
+		return soup
 
 
 	def get_story (self, uri):
@@ -148,13 +152,11 @@ class JW2HTML (object):
 		return stories
 
 
-	def build_html (self, meta, stories):
+	def build_html (self, stories):
 		"""Build output HTML document.
 
 		Also writes to file.
 
-		@param meta: meta data
-		@type meta: as returned by get_meta
 		@param stories: stories of this issue
 		@type stories: as returned by get_stories
 		@return: resulting HTML document
@@ -170,14 +172,14 @@ class JW2HTML (object):
 	<meta name="description" content="Jungle World. Die linke Wochenzeitung aus Berlin." />
 </head>
 <body>
-''' % (meta['title'])]
+''' % (self.title)]
 
 		for story in stories.itervalues():
 			html.append(story + '\n')
 
 		html.append('</body></html>')
 
-		filename = 'JW-' + meta['issue_no'].replace('/', '.') + '.html'
+		filename = 'JW-' + self.issue_no + '.html'
 		with open(filename, 'w') as f:
 			# yet again UnicodeEncodeError f.write(''.join(html))
 			for line in html:
@@ -185,22 +187,18 @@ class JW2HTML (object):
 		return html
 
 
-	def download_cover (self, uri):
-		"""Download the cover image.
-
-		@param uri: uri to download from
-		@type uri: str
-		"""
-		filename = os.path.basename(uri)
+	def download_cover (self):
+		"""Download the cover image."""
+		filename = os.path.join(self.issue_dir,
+			os.path.basename(self.uri_cover))
 		LOGGER.info('Downloading cover image...')
-		urllib.urlretrieve(self.url_server + uri, filename)
+		urllib.urlretrieve(self.url_server + self.uri_cover, filename)
 
 
 	def run (self):
 		"""Run this method when using this class."""
-		index = self.get_indexsoup()
-		meta = self.get_meta(index)
+		index = self.parse_index()
 		stories = self.get_stories(index)
 
-		self.build_html(meta, stories)
-		self.download_cover(meta['uri_cover'])
+		self.build_html(stories)
+		self.download_cover()
