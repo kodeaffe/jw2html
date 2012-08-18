@@ -179,7 +179,8 @@ class JW2HTML (object):
 
 		html.append('</body></html>')
 
-		filename = 'JW-' + self.issue_no + '.html'
+		filename = os.path.join(
+			self.issue_dir, 'JW-' + self.issue_no + '.html')
 		with open(filename, 'w') as f:
 			# yet again UnicodeEncodeError f.write(''.join(html))
 			for line in html:
