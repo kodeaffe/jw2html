@@ -27,15 +27,25 @@ Usage
 Copy settings.py.example to settings.py and edit it to match your login /
 password (or leave it empty, most articles are available freely anyway).
 
-Import the class wherever you want or run it like this:
+Put the provided jw2html.sh into your $PATH and edit it to
+match the path to the jw2html/ source directory.
+
+Then you can download the current issue as found under
+http://jungle-world.com/inhalt/ :
+
+$ jwhtml.sh
+
+If you want to download a specific issue, use this:
+
+$ jw2html.sh 2012/46
+
+
+
+For more technical uses, you can import the python class or run
+it like this:
 
 $ python jw2html/__init__.py
-
 
 It will create a cache dir of downloaded stories as sepcified in settings.py
 and create a cover image and an HTML file to feed to your favourite epub
 converter in your current directory.
-
-
-Alternatively, put the provided jw2html.sh into your $PATH and edit it to
-match the path to the jw2html/ directory.
