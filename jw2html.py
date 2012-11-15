@@ -6,8 +6,7 @@ Download the current issue and prepare for conversion to epub.
 
 """
 __docformat__ = "epytext en"
-import sys, os, getopt, urllib, urllib2, re, json, time, logging, shutil
-import random, string
+import sys, os, getopt, urllib, urllib2, httplib, re, json, time, logging, shutil, random, string
 from BeautifulSoup import BeautifulSoup
 
 logging.basicConfig(level=logging.INFO)
@@ -66,9 +65,13 @@ class JW2HTML (object):
             url = self.server + uri
             LOGGER.info('Retrieving from url %s to file %s...' % (
                 url, filename))
-            html = urllib2.urlopen(url).read()
-            with open(filename, 'w') as f:
-                f.write(html)
+            try:
+                html = urllib2.urlopen(url).read()
+                with open(filename, 'w') as f:
+                    f.write(html)
+            except httplib.BadStatusLine as err:
+                LOGGER.warn('Failed: %s' % err)
+                return None
 
         return html
 
@@ -121,6 +124,9 @@ class JW2HTML (object):
             return None
 
         page = self._fetch_html(uri)
+        if not page:
+            return None
+
         soup = BeautifulSoup(page,
             convertEntities=BeautifulSoup.HTML_ENTITIES)
         story = soup.find('div', attrs={'class':'story'})
