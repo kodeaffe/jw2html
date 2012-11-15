@@ -35,3 +35,7 @@ $ python jw2html/__init__.py
 It will create a cache dir of downloaded stories as sepcified in settings.py
 and create a cover image and an HTML file to feed to your favourite epub
 converter in your current directory.
+
+
+Alternatively, put the provided jw2html.sh into your $PATH and edit it to
+match the path to the jw2html/ directory.
