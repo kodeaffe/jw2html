@@ -130,8 +130,16 @@ class JW2HTML (object):
         soup = BeautifulSoup(page,
             convertEntities=BeautifulSoup.HTML_ENTITIES)
         story = soup.find('div', attrs={'class':'story'})
+
+        # add class chapter for e.g. automatic calibre TOC generation
+        story.find('h1').attrs.append(('class', 'chapter'))
+        # remove print button
+        story.find('div', {'class': 'menuR'}).extract()
+        # remove share buttons
+        story.find('p', {'class': 'share'}).extract()
+
         if story:
-            return str(story)
+            return unicode(story)
         else:
             return None
 
