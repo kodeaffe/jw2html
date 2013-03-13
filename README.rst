@@ -39,13 +39,13 @@ If you want to download a specific issue, use this:
 
 $ jw2html.sh 2012/46
 
-
-
-For more technical uses, you can import the python class or run
+Or for more technical uses, you can import the python class or run
 it like this:
 
 $ python jw2html/__init__.py
 
-It will create a cache dir of downloaded stories as sepcified in settings.py
-and create a cover image and an HTML file to feed to your favourite epub
-converter in your current directory.
+It will create a directory of downloaded stories as a subdirectory of CACHEDIR
+as specified in settings.py, e.g. html/13.10/ .
+It will also download a cover image and put the generated HTML file into that
+directory. The HTML file, e.g. html/13.10/JW-13.10.html, and cover image, e.g.
+html/13.10/01-titel.gif, can then be fed to your favourite epub converter.
