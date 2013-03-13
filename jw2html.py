@@ -6,7 +6,7 @@ Download the current issue and prepare for conversion to epub.
 
 """
 __docformat__ = "epytext en"
-import sys, os, getopt, urllib, urllib2, httplib, re, json, time, logging, shutil, random, string
+import sys, os, getopt, urllib, urllib2, httplib, re, json, time, logging, shutil, random, string, io
 from BeautifulSoup import BeautifulSoup
 
 logging.basicConfig(level=logging.INFO)
@@ -196,10 +196,13 @@ class JW2HTML (object):
 
         filename = os.path.join(
             self.issue_dir, 'JW-' + self.issue_no + '.html')
-        with open(filename, 'w') as f:
-            # yet again UnicodeEncodeError f.write(''.join(html))
+        # this whole unicode business sux :(
+        with io.open(filename, 'w', encoding='utf-8') as f:
             for line in html:
-                f.write(line + '\n')
+                try:
+                    f.write(u'%s\n' % line)
+                except UnicodeDecodeError, err:
+                    f.write(u'%s\n' % line.decode('utf-8'))
         return html
 
 
