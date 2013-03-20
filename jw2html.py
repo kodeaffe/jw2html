@@ -6,7 +6,8 @@ Download the current issue and prepare for conversion to epub.
 
 """
 __docformat__ = "epytext en"
-import sys, os, getopt, urllib, urllib2, httplib, re, json, time, logging, shutil, random, string, io
+import os, httplib, re, logging, shutil, random, string, io
+import urllib, urllib2 
 from BeautifulSoup import BeautifulSoup
 
 logging.basicConfig(level=logging.INFO)
@@ -28,7 +29,8 @@ class JW2HTML (object):
 
         self.title = 'Unknown issue of Jungle World'
         self.uri_cover = ''
-        self.issue_no = ''.join(random.sample(string.letters + string.digits, 8))
+        samples = random.sample(string.letters + string.digits, 8)
+        self.issue_no = ''.join(samples)
         self.issue_dir = os.path.join(self.cache_dir, self.issue_no)
 
         passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
@@ -59,16 +61,16 @@ class JW2HTML (object):
         # always fetch index from url
         if not is_index and os.path.exists(filename):
             LOGGER.info('Retrieving from file %s...' % filename)
-            with open(filename, 'r') as f:
-                html = f.read()
+            with open(filename, 'r') as handle:
+                html = handle.read()
         else:
             url = self.server + uri
             LOGGER.info('Retrieving from url %s to file %s...' % (
                 url, filename))
             try:
                 html = urllib2.urlopen(url).read()
-                with open(filename, 'w') as f:
-                    f.write(html)
+                with open(filename, 'w') as handle:
+                    handle.write(html)
             except httplib.BadStatusLine as err:
                 LOGGER.warn('Failed: %s' % err)
                 return None
@@ -102,7 +104,8 @@ class JW2HTML (object):
         shutil.move(os.path.join(self.cache_dir, 'index.html'),
             os.path.join(self.issue_dir, 'index.html'))
 
-        self.uri_cover = dict(div.find('img').attrs)['src'].replace('thumb_', '')
+        img_src = dict(div.find('img').attrs)['src']
+        self.uri_cover = img_src.replace('thumb_', '')
 
         LOGGER.info('META info: title %s, issue_no %s uri_cover %s' % (
             self.title, self.issue_no, self.uri_cover))
@@ -205,12 +208,12 @@ class JW2HTML (object):
         filename = os.path.join(
             self.issue_dir, 'JW-' + self.issue_no + '.html')
         # this whole unicode business sux :(
-        with io.open(filename, 'w', encoding='utf-8') as f:
+        with io.open(filename, 'w', encoding='utf-8') as handle:
             for line in html:
                 try:
-                    f.write(u'%s\n' % line)
-                except UnicodeDecodeError, err:
-                    f.write(u'%s\n' % line.decode('utf-8'))
+                    handle.write(u'%s\n' % line)
+                except UnicodeDecodeError:
+                    handle.write(u'%s\n' % line.decode('utf-8'))
         return html
 
 
