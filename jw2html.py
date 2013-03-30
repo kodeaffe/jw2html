@@ -11,6 +11,8 @@ from urllib import request
 from http import client
 from bs4 import BeautifulSoup
 
+import settings
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
@@ -18,21 +20,26 @@ LOGGER = logging.getLogger(__name__)
 
 class JW2HTML (object):
     """Download an issue of Jungle World + prepare for conversion to epub."""
-    def __init__ (self, user, password, server, uri_index, cache_dir):
-        self.user = user
-        self.password = password
-        self.server = server
-        self.uri_index = uri_index
+    def __init__ (self, issue_no=None):
+        self.user = settings.USER
+        self.password = settings.PASSWORD
+        self.server = settings.SERVER
 
-        self.cache_dir = cache_dir
-        if not os.path.exists(self.cache_dir):
-            os.mkdir(self.cache_dir)
+        self.cachedir = settings.CACHEDIR
+        if not os.path.exists(self.cachedir):
+            os.mkdir(self.cachedir)
 
+        if issue_no:
+            self.issue_no = issue_no
+            self.uri_index = '/artikel/' + issue_no.replace('.', '/') + '/'
+        else:
+            samples = random.sample(string.ascii_letters + string.digits, 8)
+            self.issue_no = ''.join(samples)
+            self.uri_index = settings.URI_INDEX
+
+        self.issue_dir = os.path.join(self.cachedir, self.issue_no)
         self.title = 'Unknown issue of Jungle World'
         self.uri_cover = ''
-        samples = random.sample(string.ascii_letters + string.digits, 8)
-        self.issue_no = ''.join(samples)
-        self.issue_dir = os.path.join(self.cache_dir, self.issue_no)
 
         passman = request.HTTPPasswordMgrWithDefaultRealm()
         passman.add_password(None, self.server, self.user, self.password)
@@ -107,7 +114,7 @@ class JW2HTML (object):
         @rtype: str
         """
         if is_index:
-            filename = os.path.join(self.cache_dir, 'index.html')
+            filename = os.path.join(self.cachedir, 'index.html')
         else:
             basename = os.path.basename(uri)
             filename = os.path.join(self.issue_dir, basename)
@@ -146,10 +153,10 @@ class JW2HTML (object):
         # e.g. title == 'Jungle World Nr. 31/12,2. August 2012'
         issue = self.title.split('.')[1:2][0].split(',')[0].strip().split('/')
         self.issue_no = issue[1] + '.' + issue[0]
-        self.issue_dir = os.path.join(self.cache_dir, self.issue_no)
+        self.issue_dir = os.path.join(self.cachedir, self.issue_no)
         if not os.path.exists(self.issue_dir):
             os.makedirs(self.issue_dir)
-        shutil.move(os.path.join(self.cache_dir, 'index.html'),
+        shutil.move(os.path.join(self.cachedir, 'index.html'),
             os.path.join(self.issue_dir, 'index.html'))
 
         img_src = dict(div.find('img').attrs)['src']

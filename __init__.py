@@ -7,9 +7,10 @@ Download the current issue and prepare for conversion to epub.
 """
 import sys
 from jw2html import JW2HTML
-from settings import USER, PASSWORD, SERVER, URI_INDEX, CACHEDIR
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        URI_INDEX = '/artikel/' + sys.argv[1] + '/'
-    JW2HTML(USER, PASSWORD, SERVER, URI_INDEX, CACHEDIR).run()
+        issue_no = sys.argv[1]
+    else:
+        issue_no = None # current issue
+    JW2HTML(issue_no).run()
