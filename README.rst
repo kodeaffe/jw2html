@@ -47,4 +47,4 @@ It will create a directory of downloaded stories as a subdirectory of CACHEDIR
 as specified in settings.py, e.g. html/2013.13/ .
 It will also download a cover image and put the generated HTML file into that
 directory. The HTML file, e.g. html/2013.13/JW-2013.13.html, and cover image, e.g.
-html/13.10/01-titel.gif, can then be fed to your favourite epub converter.
+html/2013.13/01-titel.gif, can then be fed to your favourite epub converter.
