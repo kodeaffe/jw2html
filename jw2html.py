@@ -41,8 +41,61 @@ class JW2HTML (object):
         request.install_opener(opener)
 
 
+    def _fetch_html_file(self, filename):
+        """Fetch HTML from cached file.
+
+        @param filename: name of file to load from
+        @type filename: str
+        @return: fetched HTML
+        @rtype: str
+        """
+        LOGGER.info('Fetch from file %s...' % filename)
+        with open(filename, 'r', encoding='utf-8') as handle:
+            html = handle.read()
+        return html
+
+
+    def _fetch_html_url(self, url):
+        """Fetch HTML from live URL.
+
+        @param url: url to load from
+        @type url: str
+        @return: fetched HTML
+        @rtype: str
+        """
+        LOGGER.info('Fetch from url %s ...' % url)
+        try:
+            return request.urlopen(url).read().decode()
+        except client.BadStatusLine as err:
+            LOGGER.warn('Failed fetching: %s' % err)
+            return None
+
+
+    def _shall_skip_html(self, html):
+        """Skip HTML (story) under certain conditions:
+
+        - None
+        - story not published yet
+
+        @param html: HTML checked to be skipped
+        @type html: str
+        @return: if story shall be skipped
+        @rtype: bool
+        """
+        if not html:
+            return True
+
+        prefix = 'Skip HTML'
+        skip_text = 'Diesen Artikel finden Sie bisher nur in der gedruckten Jungle World'
+        if skip_text in html:
+            LOGGER.warn('%s: story not yet published.' % prefix)
+            return True
+
+        return False
+
+
     def _fetch_html (self, uri, is_index=False):
-        """Retrieve HTML from either an existing cache dir or the internet.
+        """Fetch HTML from either an existing cache dir or the internet.
 
         The index page is always fetched from the internet.
 
@@ -61,20 +114,15 @@ class JW2HTML (object):
 
         # always fetch index from url
         if not is_index and os.path.exists(filename):
-            LOGGER.info('Retrieving from file %s...' % filename)
-            with open(filename, 'r', encoding='utf-8') as handle:
-                html = handle.read()
+            html = self._fetch_html_file(filename)
         else:
-            url = self.server + uri
-            LOGGER.info('Retrieving from url %s to file %s...' % (
-                url, filename))
-            try:
-                html = request.urlopen(url).read().decode()
+            html = self._fetch_html_url(self.server + uri)
+            if self._shall_skip_html(html):
+                return None
+            else: # write to cache file
+                LOGGER.info('Write to cache file %s' % filename)
                 with open(filename, 'w', encoding='utf-8') as handle:
                     handle.write(html)
-            except client.BadStatusLine as err:
-                LOGGER.warn('Failed: %s' % err)
-                return None
 
         return html
 
@@ -113,7 +161,7 @@ class JW2HTML (object):
 
 
     def get_story (self, uri):
-        """Get one story / article from given uri.
+        """Get one story / article from given URI.
 
         @param uri: URI of story
         @type uri: str
@@ -126,11 +174,11 @@ class JW2HTML (object):
         if self.issue_no.replace('.', '/') not in uri:
             return None
 
-        page = self._fetch_html(uri)
-        if not page:
+        html = self._fetch_html(uri)
+        if not html:
             return None
 
-        soup = BeautifulSoup(page)
+        soup = BeautifulSoup(html)
         story = soup.find('div', attrs={'class':'story'})
 
         try: # add class chapter for e.g. automatic calibre TOC generation
@@ -195,7 +243,7 @@ class JW2HTML (object):
         @return: resulting HTML document
         @rtype: str
         """
-        LOGGER.info('Building HTML...')
+        LOGGER.info('Build HTML ...')
         html = ['''<!DOCTYPE html>
 <html>
 <head>
@@ -224,7 +272,7 @@ class JW2HTML (object):
         """Download the cover image."""
         filename = os.path.join(self.issue_dir,
             os.path.basename(self.uri_cover))
-        LOGGER.info('Downloading cover image...')
+        LOGGER.info('Download cover image ...')
         request.urlretrieve(self.server + self.uri_cover, filename)
 
 
