@@ -13,11 +13,11 @@ in calibre.
 Dependencies
 ============
 
-$ apt-get install python-beautifulsoup
+$ apt-get install python3-bs4
 
 OR
 
-$ pip install BeautifulSoup
+$ pip install beautifulsoup4
 
 
 

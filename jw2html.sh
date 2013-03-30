@@ -1,2 +1,2 @@
 #!/bin/sh
-python jw2html/__init__.py $*
+python3 jw2html/__init__.py $*
