@@ -6,7 +6,7 @@ Download the current issue and prepare for conversion to epub.
 
 """
 __docformat__ = "epytext en"
-import os, sys, re, logging, shutil, random, string, io
+import os, sys, re, logging, shutil, random, string, io, datetime
 from urllib import request
 from http import client
 from bs4 import BeautifulSoup
@@ -152,7 +152,9 @@ class JW2HTML (object):
 
         # e.g. title == 'Jungle World Nr. 31/12,2. August 2012'
         issue = self.title.split('.')[1:2][0].split(',')[0].strip().split('/')
-        self.issue_no = issue[1] + '.' + issue[0]
+        # issue is not prefixed with century
+        century = str(datetime.datetime.now().year)[:2]
+        self.issue_no = century + issue[1] + '.' + issue[0]
         self.issue_dir = os.path.join(self.cachedir, self.issue_no)
         if not os.path.exists(self.issue_dir):
             os.makedirs(self.issue_dir)
