@@ -251,9 +251,10 @@ class JW2HTML (object):
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="author" content="Redaktion Jungle World" />
     <meta name="description" content="Jungle World. Die linke Wochenzeitung aus Berlin." />
+    <meta name="generator" content="%s" />
 </head>
 <body>
-''' % (self.title)]
+''' % (self.title, self.__class__.__name__)]
 
         for story in stories.values():
             html.append(story + '\n')
