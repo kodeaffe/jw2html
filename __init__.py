@@ -57,7 +57,7 @@ class JW2HTML (object):
         @return: fetched HTML
         @rtype: str
         """
-        LOGGER.info('Fetch from file %s...' % filename)
+        LOGGER.info('Fetch from file %s ...' % filename)
         with open(filename, 'r', encoding='utf-8') as handle:
             html = handle.read()
         return html
@@ -224,7 +224,7 @@ class JW2HTML (object):
         first = True
         stories = {}
 
-        LOGGER.info('Getting stories...')
+        LOGGER.info('Get stories...')
         for anchor in soup.findAll('a', attrs={'href':regex}):
             if first:
                 first = False
