@@ -31,7 +31,8 @@ class JW2HTML (object):
 
         if issue_no:
             self.issue_no = issue_no
-            self.uri_index = '/artikel/' + issue_no.replace('.', '/') + '/'
+            self.uri_index = settings.URI_ARTICLE +\
+                issue_no.replace('.', '/') + '/'
         else:
             samples = random.sample(string.ascii_letters + string.digits, 8)
             self.issue_no = ''.join(samples)
