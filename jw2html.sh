@@ -1,2 +1,2 @@
 #!/bin/sh
-python3 jw2html/__init__.py $*
+python3 -c 'import jw2html; jw2html.main()' $*
