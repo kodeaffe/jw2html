@@ -11,10 +11,14 @@ from urllib import request
 from http import client
 from bs4 import BeautifulSoup
 
-from . import settings
-
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
+
+try:
+    from . import settings
+except ImportError:
+    LOGGER.error('Forgot to copy settings.py.example to settings.py?')
+    raise
 
 
 
