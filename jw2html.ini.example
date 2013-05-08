@@ -1,0 +1,14 @@
+#
+# Config file for Jungle World 2 HTML
+#
+# Adapt and copy this file to ~/.jw2html.ini
+
+[SETTINGS]
+user: user@domain.com
+password: password
+server: https://jungle-world.com
+uri_index: /inhalt/
+uri_article: /artikel/
+# cachedir where downloaded HTML pages are stored, relative to where jw2html is executed
+cachedir: html
+

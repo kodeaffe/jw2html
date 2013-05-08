@@ -24,7 +24,8 @@ $ pip install beautifulsoup4
 Usage
 =====
 
-Copy settings.py.example to settings.py and edit it to match your login /
+Copy jw2html.ini.example to $HOME/.jw2html.ini (or to /etc/jw2html.ini for
+system-wide installation) and edit it to match your login /
 password (or leave it empty, most articles are available freely anyway).
 
 Put the provided jw2html.sh into your $PATH and edit it to
@@ -44,7 +45,7 @@ Or for more technical uses, you can import the package and run it like this:
 $ python3 -c 'import jw2html; jw2html.main()' $*
 
 It will create a directory of downloaded stories as a subdirectory of CACHEDIR
-as specified in settings.py, e.g. html/2013.13/ .
+as specified in jw2html.ini, e.g. html/2013.13/ .
 It will also download a cover image and put the generated HTML file into that
 directory. The HTML file, e.g. html/2013.13/JW-2013.13.html, and cover image, e.g.
 html/2013.13/01-titel.gif, can then be fed to your favourite epub converter.

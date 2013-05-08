@@ -14,33 +14,28 @@ from bs4 import BeautifulSoup
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
-try:
-    from . import settings
-except ImportError:
-    LOGGER.error('Forgot to copy settings.py.example to settings.py?')
-    raise
-
+from .config import settings
 
 
 class JW2HTML (object):
     """Download an issue of Jungle World + prepare for conversion to epub."""
     def __init__ (self, issue_no=None):
-        self.user = settings.USER
-        self.password = settings.PASSWORD
-        self.server = settings.SERVER
+        self.user = settings['user']
+        self.password = settings['password']
+        self.server = settings['server']
 
-        self.cachedir = settings.CACHEDIR
+        self.cachedir = settings['cachedir']
         if not os.path.exists(self.cachedir):
             os.mkdir(self.cachedir)
 
         if issue_no:
             self.issue_no = issue_no
-            self.uri_index = settings.URI_ARTICLE +\
+            self.uri_index = settings['uri_article'] +\
                 issue_no.replace('.', '/') + '/'
         else:
             samples = random.sample(string.ascii_letters + string.digits, 8)
             self.issue_no = ''.join(samples)
-            self.uri_index = settings.URI_INDEX
+            self.uri_index = settings['uri_index']
 
         self.issue_dir = os.path.join(self.cachedir, self.issue_no)
         self.title = 'Unknown issue of Jungle World'
