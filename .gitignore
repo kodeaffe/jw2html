@@ -1,3 +1,6 @@
 *.pyc
 *.swp
 html/
+JW2HTML.egg-info
+dist/
+build/

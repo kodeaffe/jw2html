@@ -8,44 +8,47 @@ HTML file which can then be converted to epub (using e.g. http://calibre-ebook.c
 It also downloads the cover image for easy inclusion when creating the book
 in calibre.
 
+INSTALL
+=======
+
+Python Package Index (http://pypi.python.org)
+---------------------------------------------
+
+$ pip install jw2html
 
 
-Dependencies
-============
+Source (http://github.com/marmorkuchen/jw2html)
+-----------------------------------------------
+Install dependencies:
 
 $ apt-get install python3-bs4
-
 OR
-
 $ pip install beautifulsoup4
+
+Create source distribution and install that:
+
+$ python3 setup.py sdist
+$ cd dist/ && tar xzf JW2HTML-$VERSION && cd JW2HTML-$VERSION
+$ sudo python3 setup.py install
 
 
 
 Usage
 =====
 
-Copy jw2html.ini.example to $HOME/.jw2html.ini (or to /etc/jw2html.ini for
-system-wide installation) and edit it to match your login /
-password (or leave it empty, most articles are available freely anyway).
+Copy /etc/jw2html.ini to $HOME/.jw2html.ini and edit it to match your login / password. Or don't bother to copy and edit, because most articles are available freely anyway.
+Setuptools should have installed a script jw2html to run the package for you. Then you can download the current issue as found under
+http://jungle-world.com/inhalt/ just by typing:
 
-Put the provided jw2html.sh into your $PATH and edit it to
-match the path to the jw2html/ source directory.
-
-Then you can download the current issue as found under
-http://jungle-world.com/inhalt/ :
-
-$ jwhtml.sh
+$ jw2html
 
 If you want to download a specific issue, use this:
 
-$ jw2html.sh 2013.13
+$ jw2html 2013.13
 
-Or for more technical uses, you can import the package and run it like this:
 
+For more technical uses you can import the package and run it like this:
 $ python3 -c 'import jw2html; jw2html.main()' $*
 
-It will create a directory of downloaded stories as a subdirectory of CACHEDIR
-as specified in jw2html.ini, e.g. html/2013.13/ .
-It will also download a cover image and put the generated HTML file into that
-directory. The HTML file, e.g. html/2013.13/JW-2013.13.html, and cover image, e.g.
-html/2013.13/01-titel.gif, can then be fed to your favourite epub converter.
+
+It will create a directory of downloaded stories as a subdirectory of CACHEDIR as specified in jw2html.ini, e.g. html/2013.13/ .  It will also download a cover image and put the generated HTML file into that directory. The HTML file, e.g. html/2013.13/JW-2013.13.html, and cover image, e.g. html/2013.13/01-titel.gif, can then be fed to your favourite epub converter.

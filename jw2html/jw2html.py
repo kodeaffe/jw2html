@@ -6,7 +6,7 @@ Download the current issue and prepare for conversion to epub.
 
 """
 __docformat__ = "epytext en"
-import os, sys, re, logging, shutil, random, string, io, datetime
+import os, re, logging, shutil, random, string, io, datetime
 from urllib import request
 from http import client
 from bs4 import BeautifulSoup
@@ -293,12 +293,3 @@ class JW2HTML (object):
 
         self.build_html(stories)
         self.download_cover()
-
-
-
-def main():
-    if len(sys.argv) > 1:
-        issue_no = sys.argv[1]
-    else:
-        issue_no = None # current issue
-    JW2HTML(issue_no).run()
