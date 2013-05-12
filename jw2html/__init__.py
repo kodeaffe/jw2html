@@ -8,7 +8,7 @@ Download the current issue and prepare for conversion to epub.
 __docformat__ = "epytext en"
 import sys, logging
 
-VERSION = '0.1'
+VERSION = '0.2'
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
