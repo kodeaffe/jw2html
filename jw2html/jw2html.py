@@ -11,15 +11,12 @@ from urllib import request
 from http import client
 from bs4 import BeautifulSoup
 
-logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-
-from .config import settings
 
 
 class JW2HTML (object):
     """Download an issue of Jungle World + prepare for conversion to epub."""
-    def __init__ (self, issue_no=None):
+    def __init__ (self, settings, issue_no=None):
         self.user = settings['user']
         self.password = settings['password']
         self.server = settings['server']

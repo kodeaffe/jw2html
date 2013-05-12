@@ -6,16 +6,22 @@ Download the current issue and prepare for conversion to epub.
 
 """
 __docformat__ = "epytext en"
-import sys
+import sys, logging
 
 VERSION = '0.1'
+
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+
 from .jw2html import JW2HTML
 __all__ = ['VERSION', 'JW2HTML']
 
 
 def main():
+    print('.oOo. Welcome to JW2HTML version %s .oOo.' % VERSION)
     if len(sys.argv) > 1:
         issue_no = sys.argv[1]
     else:
         issue_no = None # current issue
-    JW2HTML(issue_no).run()
+    from .config import settings
+    JW2HTML(settings, issue_no).run()
