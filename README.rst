@@ -14,7 +14,7 @@ INSTALL
 Python Package Index (http://pypi.python.org)
 ---------------------------------------------
 
-$ pip install jw2html
+$ pip3 install jw2html
 
 
 Source (http://github.com/marmorkuchen/jw2html)
@@ -22,13 +22,17 @@ Source (http://github.com/marmorkuchen/jw2html)
 Install dependencies:
 
 $ apt-get install python3-bs4
+
 OR
-$ pip install beautifulsoup4
+
+$ pip3 install beautifulsoup4
 
 Create source distribution and install that:
 
 $ python3 setup.py sdist
+
 $ cd dist/ && tar xzf JW2HTML-$VERSION && cd JW2HTML-$VERSION
+
 $ sudo python3 setup.py install
 
 
@@ -37,8 +41,8 @@ Usage
 =====
 
 Copy /etc/jw2html.ini to $HOME/.jw2html.ini and edit it to match your login / password. Or don't bother to copy and edit, because most articles are available freely anyway.
-Setuptools should have installed a script jw2html to run the package for you. Then you can download the current issue as found under
-http://jungle-world.com/inhalt/ just by typing:
+
+Setuptools should have installed a script jw2html to run the package for you. Then you can download the current issue as found under http://jungle-world.com/inhalt/ just by typing:
 
 $ jw2html
 
@@ -48,6 +52,7 @@ $ jw2html 2013.13
 
 
 For more technical uses you can import the package and run it like this:
+
 $ python3 -c 'import jw2html; jw2html.main()' $*
 
 
