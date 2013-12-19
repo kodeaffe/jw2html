@@ -6,9 +6,9 @@ Download the current issue and prepare for conversion to epub.
 
 """
 __docformat__ = "epytext en"
-import sys, logging
+import sys, logging, datetime
 
-VERSION = '0.2'
+VERSION = '0.2.dev-' + str(datetime.date.today())
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
